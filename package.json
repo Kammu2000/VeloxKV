@@ -1,0 +1,19 @@
+{
+  "name": "VeloxKV",
+  "version": "1.0.0",
+  "description": "A blazingly fast in-memory key-value database",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "keywords": [],
+  "author": "Deepanshu Upadhyay",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^25.8.0",
+    "prettier": "^3.8.3",
+    "typescript": "^6.0.3"
+  }
+}
