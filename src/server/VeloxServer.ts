@@ -1,9 +1,9 @@
 import net, { Server, Socket } from "net";
 import Parser from "redis-parser";
-import { RedisError } from "redis-errors";
+import { RedisError as VeloxError } from "redis-errors";
 import logger from "../common/helpers/logger";
 
-export class RedisServer {
+export class VeloxServer {
   private server: Server;
   private sockets: Set<Socket>;
 
@@ -19,7 +19,7 @@ export class RedisServer {
           returnReply(reply: any): void {
             logger.log(reply);
           },
-          returnError(err: RedisError): void {
+          returnError(err: VeloxError): void {
             logger.error(err);
           },
         });
