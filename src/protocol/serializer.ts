@@ -4,8 +4,9 @@ import { RespType, RespValue } from "./types";
 export class RespSerializer {
   serialize(value: RespValue): string {
     switch (value.type) {
-      case RespType.SIMPLE_STRING:
+      case RespType.SIMPLE_STRING: {
         return `${value.value}${CRLF}`;
+      }
 
       case RespType.BULK_STRING: {
         const val = value.value;
@@ -23,6 +24,10 @@ export class RespSerializer {
       case RespType.ARRAY: {
         const val = value.value;
         return `*${val.length}${CRLF}${val.map((respValue: RespValue): string => this.serialize(respValue)).join("")}`;
+      }
+
+      case RespType.NULL: {
+        return `_${CRLF}`;
       }
     }
   }

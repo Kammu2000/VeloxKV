@@ -4,6 +4,7 @@ export enum RespType {
   INTEGER = "integer",
   ARRAY = "array",
   ERROR = "error",
+  NULL = "null",
 }
 
 export interface RespSimpleString {
@@ -26,11 +27,16 @@ export interface RespError {
   value: string;
 }
 
+export interface RespNull {
+  type: RespType.NULL;
+}
+
 export type RespValue =
   | RespSimpleString
   | RespBulkString
   | RespInt
   | RespError
+  | RespNull
   | RespArray;
 
 export interface RespArray {
