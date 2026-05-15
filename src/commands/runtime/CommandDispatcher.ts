@@ -1,5 +1,5 @@
 import { CommandRegistry } from "./CommandRegistry";
-import { RespValue } from "../protocol/types";
+import { RespValue } from "../../protocol/types";
 
 export class CommandDispatcher {
   constructor(private registry: CommandRegistry) {}

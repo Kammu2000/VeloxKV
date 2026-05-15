@@ -2,38 +2,61 @@ import net, { Server, Socket } from "net";
 import Parser from "redis-parser";
 import { RedisError as VeloxError } from "redis-errors";
 import logger from "../common/helpers/logger";
+import { CommandDispatcher } from "../commands/runtime/CommandDispatcher";
+import { RespSerializer } from "../protocol/serializer";
+import { RespError, RespType, RespValue } from "../protocol/types";
 
 export class VeloxServer {
   private server: Server;
   private sockets: Set<Socket>;
+  private commandDispatcher: CommandDispatcher;
+  private respSerializer: RespSerializer;
 
-  constructor() {
+  constructor(
+    commandDispatcher: CommandDispatcher,
+    respSerializer: RespSerializer,
+  ) {
     this.sockets = new Set();
+    this.commandDispatcher = commandDispatcher;
+    this.respSerializer = respSerializer;
+    this.server = net.createServer(this.handleConnection.bind(this));
+  }
 
-    this.server = net.createServer((socket: Socket): void => {
-      this.sockets.add(socket);
-      logger.log("Client connected");
+  private handleConnection(socket: Socket): void {
+    this.sockets.add(socket);
+    logger.log("Client connected");
 
-      socket.on("data", (data: Buffer): void => {
-        const parser = new Parser({
-          returnReply(reply: any): void {
-            logger.log(reply);
-          },
-          returnError(err: VeloxError): void {
-            logger.error(err);
-          },
-        });
+    socket.setKeepAlive(true);
+    socket.setNoDelay(true);
 
-        parser.execute(data);
-        socket.write("+PONG\r\n");
+    const parser = this.createParser(socket);
+    socket.on("data", (chunk: Buffer): void => parser.execute(chunk));
+
+    socket.on("end", (): void => {
+      logger.log("Client disconnected");
+    });
+  }
+
+  private createParser(socket: Socket): Parser {
+    const handleClientReply = (reply: any): void => {
+      this.commandDispatcher.dispatch(reply).then((result: RespValue): void => {
+        const respResult = this.respSerializer.serialize(result);
+        socket.write(respResult);
       });
+    };
 
-      socket.on("end", (): void => {
-        logger.log("Client disconnected");
-      });
+    const handleClientError = (err: VeloxError): void => {
+      const respError: RespError = {
+        type: RespType.ERROR,
+        value: err.message,
+      };
 
-      socket.setKeepAlive(true);
-      socket.setNoDelay(true);
+      this.respSerializer.serialize(respError);
+    };
+
+    return new Parser({
+      returnReply: handleClientReply,
+      returnError: handleClientError,
     });
   }
 
