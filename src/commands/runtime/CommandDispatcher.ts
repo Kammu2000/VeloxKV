@@ -1,19 +1,31 @@
 import { CommandRegistry } from "./CommandRegistry";
-import { RespValue } from "../../protocol/types";
+import { VeloxStore } from "../../store/VeloxStore";
+import { createRespError } from "../../protocol/utils";
+import { RespType, RespValue } from "../../protocol/types";
 
 export class CommandDispatcher {
-  constructor(private registry: CommandRegistry) {}
+  constructor(
+    private registry: CommandRegistry,
+    private store: VeloxStore,
+  ) {}
 
   async dispatch(rawCommand: string[]): Promise<RespValue> {
     const commandName = rawCommand[0];
+
+    // client connected
+    if (commandName === "COMMAND") {
+      return { type: RespType.NULL };
+    }
+
     const command = this.registry.get(commandName);
 
     if (!command) {
-      throw new Error(`unknown command: ${commandName}`);
+      return createRespError(`unknown command: ${commandName}`);
     }
 
     return await command.execute({
       args: rawCommand.slice(1),
+      store: this.store,
     });
   }
 }

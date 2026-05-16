@@ -5,12 +5,12 @@ export class RespSerializer {
   serialize(value: RespValue): string {
     switch (value.type) {
       case RespType.SIMPLE_STRING: {
-        return `${value.value}${CRLF}`;
+        return `+${value.value}${CRLF}`;
       }
 
       case RespType.BULK_STRING: {
         const val = value.value;
-        return `*${val.length}${CRLF}${val}${CRLF}`;
+        return `$${val.length}${CRLF}${val}${CRLF}`;
       }
 
       case RespType.INTEGER: {

@@ -1,7 +1,9 @@
+import { VeloxStore } from "../../store/VeloxStore";
 import { RespValue } from "../../protocol/types";
 
 export interface CommandContext {
   args: string[];
+  store: VeloxStore;
 }
 
 export interface Command {
