@@ -1,3 +1,5 @@
+import { Deque } from "../common/utils/deque";
+
 export enum VeloxDataType {
   STRING = "string",
   LIST = "list",
@@ -11,7 +13,7 @@ export interface VeloxStringValue {
 
 export interface VeloxListValue {
   type: VeloxDataType.LIST;
-  value: string[];
+  value: Deque<string>;
 }
 
 export interface VeloxSetValue {

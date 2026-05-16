@@ -1,11 +1,18 @@
 import { CommandRegistry } from "./CommandRegistry";
+import { CommandType } from "./Command";
 import { PingCommand } from "../PingCommand";
 import { EchoCommand } from "../EchoCommand";
 import { GetCommand } from "../GetCommand";
 import { SetCommand } from "../SetCommand";
 import { DelCommand } from "../DelCommand";
 import { ExistsCommand } from "../ExistsCommand";
-import { CommandType } from "./Command";
+import { LPushCommand } from "../LPushCommand";
+import { RPushCommand } from "../RPushCommand";
+import { LPopCommand } from "../LPopCommand";
+import { RPopCommand } from "../RPopCommand";
+import { LLenCommand } from "../LLenCommand";
+import { LIndexCommand } from "../LIndexCommand";
+import { LRangeCommand } from "../LRangeCommand";
 
 export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.PING, new PingCommand());
@@ -14,4 +21,11 @@ export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.SET, new SetCommand());
   registry.register(CommandType.DEL, new DelCommand());
   registry.register(CommandType.EXISTS, new ExistsCommand());
+  registry.register(CommandType.LPUSH, new LPushCommand());
+  registry.register(CommandType.RPUSH, new RPushCommand());
+  registry.register(CommandType.LPOP, new LPopCommand());
+  registry.register(CommandType.RPOP, new RPopCommand());
+  registry.register(CommandType.LLEN, new LLenCommand());
+  registry.register(CommandType.LINDEX, new LIndexCommand());
+  registry.register(CommandType.LRANGE, new LRangeCommand());
 };

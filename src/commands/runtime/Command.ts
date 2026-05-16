@@ -17,4 +17,11 @@ export enum CommandType {
   SET = "SET",
   DEL = "DEL",
   EXISTS = "EXISTS",
+  LPUSH = "LPUSH",
+  RPUSH = "RPUSH",
+  LPOP = "LPOP",
+  RPOP = "RPOP",
+  LLEN = "LLEN",
+  LINDEX = "LINDEX",
+  LRANGE = "LRANGE",
 }
