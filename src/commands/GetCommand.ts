@@ -1,6 +1,11 @@
 import { Command, CommandContext } from "./runtime/Command";
-import { createRespNull, getRespValue } from "../protocol/utils";
+import {
+  createRespNull,
+  createRespBulkString,
+  createRespError,
+} from "../protocol/utils";
 import { RespValue } from "../protocol/types";
+import { VeloxDataType } from "../store/types";
 
 export class GetCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
@@ -13,6 +18,9 @@ export class GetCommand implements Command {
       return createRespNull();
     }
 
-    return getRespValue(storedValue);
+    if (storedValue.type === VeloxDataType.STRING)
+      return createRespBulkString(storedValue.value);
+
+    return createRespError("value is not a string");
   }
 }

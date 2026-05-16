@@ -8,7 +8,6 @@ import {
   RespType,
   RespValue,
 } from "./types";
-import { VeloxDataType, VeloxValue } from "../store/types";
 
 export const createRespSimpleString = (value: string): RespSimpleString => {
   return {
@@ -51,19 +50,6 @@ export const createRespNull = (): RespNull => {
   };
 };
 
-export const getRespValue = (value: VeloxValue): RespValue => {
-  switch (value.type) {
-    case VeloxDataType.STRING: {
-      return createRespBulkString(value.value);
-    }
-
-    case VeloxDataType.LIST:
-    case VeloxDataType.SET: {
-      return createRespArray(
-        [...value.value].map(
-          (val: string): RespBulkString => createRespBulkString(val),
-        ),
-      );
-    }
-  }
+export const isString = (value: any): value is string => {
+  return typeof value === "string";
 };
