@@ -30,9 +30,7 @@ export class Deque<T> {
     return val;
   }
 
-  pop_front(): T | undefined {
-    if (this.isEmpty()) return undefined;
-
+  pop_front(): T {
     const val = this.list[this.head];
     delete this.list[this.head];
 
@@ -65,5 +63,11 @@ export class Deque<T> {
     if (idx < 0 && idx >= len) return undefined;
 
     return this.list[this.head + idx];
+  }
+
+  clear(): void {
+    this.list = {};
+    this.head = 0;
+    this.tail = 0;
   }
 }
