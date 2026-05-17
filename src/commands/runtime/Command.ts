@@ -1,9 +1,11 @@
 import { VeloxStore } from "../../store/VeloxStore";
+import { ClientConnection } from "../../server/connections/ClientConnection";
 import { RespValue } from "../../protocol/types";
 
 export interface CommandContext {
   args: string[];
   store: VeloxStore;
+  connection: ClientConnection;
 }
 
 export interface Command {

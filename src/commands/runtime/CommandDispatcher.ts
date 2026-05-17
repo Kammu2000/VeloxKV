@@ -1,6 +1,7 @@
 import { CommandRegistry } from "./CommandRegistry";
 import { VeloxStore } from "../../store/VeloxStore";
 import { createRespError } from "../../protocol/utils";
+import { ClientConnection } from "../../server/connections/ClientConnection";
 import { RespType, RespValue } from "../../protocol/types";
 
 export class CommandDispatcher {
@@ -9,7 +10,10 @@ export class CommandDispatcher {
     private store: VeloxStore,
   ) {}
 
-  async dispatch(rawCommand: string[]): Promise<RespValue> {
+  async dispatch(
+    rawCommand: string[],
+    connection: ClientConnection,
+  ): Promise<RespValue> {
     const commandName = rawCommand[0];
 
     // client connected
@@ -26,6 +30,7 @@ export class CommandDispatcher {
     return await command.execute({
       args: rawCommand.slice(1),
       store: this.store,
+      connection,
     });
   }
 }

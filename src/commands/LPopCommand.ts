@@ -12,19 +12,25 @@ export class LPopCommand implements Command {
     const { args, store } = ctx;
     const [listKey] = args;
 
-    let list = store.get(listKey);
+    const listObj = store.get(listKey);
 
-    if (!list) {
+    if (!listObj) {
       return createRespNull();
     }
 
-    if (list.type !== VeloxDataType.LIST) {
+    if (listObj.type !== VeloxDataType.LIST) {
       return createRespError(
         "Operation against a key holding the wrong kind of value",
       );
     }
 
-    const value = list.value.pop_front();
+    const list = listObj.value;
+    const value = list.lpop();
+
+    if (list.isEmpty()) {
+      store.del(listKey);
+    }
+
     return createRespInteger(String(value));
   }
 }

@@ -1,9 +1,9 @@
-import { Deque } from "../common/utils/deque";
+import { WaitToken } from "../server/connections/utils/WaitToken";
+import { VeloxList } from "./values/VeloxList";
 
 export enum VeloxDataType {
   STRING = "string",
   LIST = "list",
-  SET = "set",
 }
 
 export interface VeloxStringValue {
@@ -13,12 +13,7 @@ export interface VeloxStringValue {
 
 export interface VeloxListValue {
   type: VeloxDataType.LIST;
-  value: Deque<string>;
+  value: VeloxList<string, WaitToken>;
 }
 
-export interface VeloxSetValue {
-  type: VeloxDataType.SET;
-  value: Set<string>;
-}
-
-export type VeloxValue = VeloxStringValue | VeloxListValue | VeloxSetValue;
+export type VeloxValue = VeloxStringValue | VeloxListValue;

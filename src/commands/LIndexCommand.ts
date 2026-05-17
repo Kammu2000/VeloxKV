@@ -12,19 +12,20 @@ export class LIndexCommand implements Command {
     const { args, store } = ctx;
     const [listKey, idx] = args;
 
-    const list = store.get(listKey);
+    const listObj = store.get(listKey);
 
-    if (!list || !idx) {
+    if (!listObj || !idx) {
       return createRespNull();
     }
 
-    if (list.type !== VeloxDataType.LIST) {
+    if (listObj.type !== VeloxDataType.LIST) {
       return createRespError(
         "Operation against a key holding the wrong kind of value",
       );
     }
 
-    const value = list.value.at(Number(idx));
+    const list = listObj.value;
+    const value = list.at(Number(idx));
 
     if (!value) {
       return createRespNull();

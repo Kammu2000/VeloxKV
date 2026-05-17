@@ -1,0 +1,67 @@
+import { Command, CommandContext } from "./runtime/Command";
+import { RespValue } from "../protocol/types";
+import {
+  createRespError,
+  createRespInteger,
+  createRespNull,
+} from "../protocol/utils";
+import { VeloxDataType } from "../store/types";
+import { BlockedOperation } from "../server/connections/utils/BlockedOperation";
+import { WaitToken } from "../server/connections/utils/WaitToken";
+
+export class BLPopCommand implements Command {
+  async execute(ctx: CommandContext): Promise<RespValue> {
+    const { args, store, connection } = ctx;
+    const keys = args.slice(0, -1);
+    const timeoutMs = args[-1];
+
+    // case-1: if any of the list is non-empty then return the value by popping first element
+    for (const key of keys) {
+      const listObj = store.get(key);
+
+      if (!listObj) {
+        return createRespNull();
+      }
+
+      if (listObj.type !== VeloxDataType.LIST) {
+        return createRespError(
+          "Operation against a key holding the wrong kind of value",
+        );
+      }
+
+      if (!listObj.value.isEmpty()) {
+        const list = listObj.value;
+        const value = list.lpop();
+        return createRespInteger(value);
+      }
+    }
+
+    // case-2: all of the lists are empty so we block code logically using await on promise which will be resolved after timeout
+    // with null or with any value pushed to any of the list through lpush or rpush comamnds
+
+    // Design Decision: we are using only single thread and taking advantage of async runtime of javascript which is not possible in C++ / java.
+    // In languages like C++/Java,  you need to use multithreading to produce async runtime which will not scale when threads
+    // grows to very high number because each thread occupies certain amount of memory so memory explodes with the number of threads.
+    // Redis is also single threaded and it has implemented async runtime in C++ by keeping single thread similar to nodejs using event loop
+    const blockingOp = new BlockedOperation(
+      timeoutMs ? Number(timeoutMs) : undefined,
+    );
+
+    connection.setBlockedOperation(blockingOp);
+
+    for (const key of keys) {
+      const listObj = store.get(key);
+
+      if (listObj && listObj.type === VeloxDataType.LIST) {
+        const list = listObj.value;
+        const waitingList = list.getWaiters();
+        const waitToken = new WaitToken(waitingList, blockingOp);
+
+        waitingList.push(waitToken);
+        blockingOp.addToken(waitToken);
+      }
+    }
+
+    return await blockingOp.promise;
+  }
+}

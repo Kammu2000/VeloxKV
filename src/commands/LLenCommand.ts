@@ -12,19 +12,20 @@ export class LLenCommand implements Command {
     const { args, store } = ctx;
     const [listKey] = args;
 
-    let list = store.get(listKey);
+    const listObj = store.get(listKey);
 
-    if (!list) {
+    if (!listObj) {
       return createRespNull();
     }
 
-    if (list.type !== VeloxDataType.LIST) {
+    if (listObj.type !== VeloxDataType.LIST) {
       return createRespError(
         "Operation against a key holding the wrong kind of value",
       );
     }
 
-    const value = list.value.size();
+    const list = listObj.value;
+    const value = list.size();
     return createRespInteger(String(value));
   }
 }
