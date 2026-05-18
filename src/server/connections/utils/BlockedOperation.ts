@@ -18,7 +18,7 @@ export class BlockedOperation {
     if (timeOutMs && timeOutMs !== 0) {
       this.timeout = setTimeout((): void => {
         this.complete(createRespNull());
-      });
+      }, timeOutMs);
     }
   }
 

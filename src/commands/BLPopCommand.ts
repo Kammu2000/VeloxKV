@@ -1,26 +1,23 @@
 import { Command, CommandContext } from "./runtime/Command";
-import { RespValue } from "../protocol/types";
-import {
-  createRespError,
-  createRespInteger,
-  createRespNull,
-} from "../protocol/utils";
-import { VeloxDataType } from "../store/types";
+import { createRespError, createRespInteger } from "../protocol/utils";
 import { BlockedOperation } from "../server/connections/utils/BlockedOperation";
 import { WaitToken } from "../server/connections/utils/WaitToken";
+import { VeloxDataType } from "../store/types";
+import { RespValue } from "../protocol/types";
+import { FastQueue } from "../common/utils/FastQueue";
 
 export class BLPopCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
     const { args, store, connection } = ctx;
     const keys = args.slice(0, -1);
-    const timeoutMs = args[-1];
+    const timeoutMs = args[args.length - 1];
 
     // case-1: if any of the list is non-empty then return the value by popping first element
     for (const key of keys) {
       const listObj = store.get(key);
 
       if (!listObj) {
-        return createRespNull();
+        continue;
       }
 
       if (listObj.type !== VeloxDataType.LIST) {
@@ -29,9 +26,15 @@ export class BLPopCommand implements Command {
         );
       }
 
-      if (!listObj.value.isEmpty()) {
-        const list = listObj.value;
+      const list = listObj.value;
+
+      if (!list.isEmpty()) {
         const value = list.lpop();
+
+        if (list.isEmpty()) {
+          store.del(key);
+        }
+
         return createRespInteger(value);
       }
     }
@@ -50,16 +53,17 @@ export class BLPopCommand implements Command {
     connection.setBlockedOperation(blockingOp);
 
     for (const key of keys) {
-      const listObj = store.get(key);
+      let waitingList = store.listWaitingMap.get(key);
 
-      if (listObj && listObj.type === VeloxDataType.LIST) {
-        const list = listObj.value;
-        const waitingList = list.getWaiters();
-        const waitToken = new WaitToken(waitingList, blockingOp);
-
-        waitingList.push(waitToken);
-        blockingOp.addToken(waitToken);
+      if (!waitingList) {
+        waitingList = new FastQueue<WaitToken>();
+        store.listWaitingMap.set(key, waitingList);
       }
+
+      const waitToken = new WaitToken(waitingList, blockingOp);
+
+      waitingList.push(waitToken);
+      blockingOp.addToken(waitToken);
     }
 
     return await blockingOp.promise;

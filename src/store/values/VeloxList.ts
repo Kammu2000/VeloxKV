@@ -1,9 +1,7 @@
 import { Deque } from "../../common/utils/Deque";
-import { FastQueue } from "../../common/utils/FastQueue";
 
-export class VeloxList<T, W> {
+export class VeloxList<T> {
   private list = new Deque<T>();
-  private waiters = new FastQueue<W>();
 
   at(idx: number): T | undefined {
     return this.list.at(idx);
@@ -52,17 +50,5 @@ export class VeloxList<T, W> {
 
   isEmpty(): boolean {
     return this.list.size() === 0;
-  }
-
-  getNextWaiter(): W | undefined {
-    return this.waiters.pop();
-  }
-
-  removeWaiter(token: W): void {
-    this.waiters.delete(token);
-  }
-
-  getWaiters(): FastQueue<W> {
-    return this.waiters;
   }
 }

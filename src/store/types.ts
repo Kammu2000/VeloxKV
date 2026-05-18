@@ -1,4 +1,3 @@
-import { WaitToken } from "../server/connections/utils/WaitToken";
 import { VeloxList } from "./values/VeloxList";
 
 export enum VeloxDataType {
@@ -13,7 +12,7 @@ export interface VeloxStringValue {
 
 export interface VeloxListValue {
   type: VeloxDataType.LIST;
-  value: VeloxList<string, WaitToken>;
+  value: VeloxList<string>;
 }
 
 export type VeloxValue = VeloxStringValue | VeloxListValue;

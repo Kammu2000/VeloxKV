@@ -4,7 +4,6 @@ import {
   createRespInteger,
 } from "../protocol/utils";
 import { VeloxList } from "../store/values/VeloxList";
-import { WaitToken } from "../server/connections/utils/WaitToken";
 import { Command, CommandContext } from "./runtime/Command";
 import { VeloxDataType } from "../store/types";
 import { RespValue } from "../protocol/types";
@@ -20,7 +19,7 @@ export class LPushCommand implements Command {
     if (!listObj) {
       listObj = {
         type: VeloxDataType.LIST,
-        value: new VeloxList<string, WaitToken>(),
+        value: new VeloxList<string>(),
       };
       store.set(listKey, listObj);
     }
@@ -42,11 +41,12 @@ export class LPushCommand implements Command {
   }
 
   private notifyWaiter(
-    list: VeloxList<string, WaitToken>,
+    list: VeloxList<string>,
     listKey: string,
     store: VeloxStore,
   ): void {
-    const waiter = list.getNextWaiter();
+    const waitingList = store.listWaitingMap.get(listKey);
+    const waiter = waitingList?.pop();
 
     if (waiter) {
       const value = list.lpop();
