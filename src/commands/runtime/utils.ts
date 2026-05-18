@@ -13,6 +13,7 @@ import { RPopCommand } from "../RPopCommand";
 import { LLenCommand } from "../LLenCommand";
 import { LIndexCommand } from "../LIndexCommand";
 import { LRangeCommand } from "../LRangeCommand";
+import { BLPopCommand } from "../BLPopCommand";
 
 export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.PING, new PingCommand());
@@ -28,4 +29,5 @@ export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.LLEN, new LLenCommand());
   registry.register(CommandType.LINDEX, new LIndexCommand());
   registry.register(CommandType.LRANGE, new LRangeCommand());
+  registry.register(CommandType.BLPOP, new BLPopCommand());
 };

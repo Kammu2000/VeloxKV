@@ -26,4 +26,5 @@ export enum CommandType {
   LLEN = "LLEN",
   LINDEX = "LINDEX",
   LRANGE = "LRANGE",
+  BLPOP = "BLPOPA",
 }
