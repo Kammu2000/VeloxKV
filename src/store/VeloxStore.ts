@@ -1,5 +1,5 @@
-import { FastQueue } from "../common/utils/FastQueue";
-import { WaitToken } from "../server/connections/utils/WaitToken";
+import { FastQueue } from "@common/utils/FastQueue";
+import { WaitToken } from "@server/connections/utils/WaitToken";
 import { VeloxValue } from "./types";
 
 export class VeloxStore {

@@ -1,6 +1,6 @@
 import { WaitToken } from "./WaitToken";
-import { createRespNull } from "../../../protocol/utils";
-import { RespValue } from "../../../protocol/types";
+import { createRespNull } from "@protocol/utils";
+import { RespValue } from "@protocol/types";
 
 export class BlockedOperation {
   readonly promise: Promise<RespValue>;

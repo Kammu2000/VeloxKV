@@ -1,8 +1,8 @@
 import { CommandRegistry } from "./CommandRegistry";
-import { VeloxStore } from "../../store/VeloxStore";
-import { createRespError } from "../../protocol/utils";
-import { ClientConnection } from "../../server/connections/ClientConnection";
-import { RespType, RespValue } from "../../protocol/types";
+import { VeloxStore } from "@store/VeloxStore";
+import { createRespError } from "@protocol/utils";
+import { ClientConnection } from "@server/connections/ClientConnection";
+import { RespType, RespValue } from "@protocol/types";
 
 export class CommandDispatcher {
   constructor(

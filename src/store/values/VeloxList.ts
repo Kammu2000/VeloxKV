@@ -1,4 +1,4 @@
-import { Deque } from "../../common/utils/Deque";
+import { Deque } from "@common/utils/Deque";
 
 export class VeloxList<T> {
   private list = new Deque<T>();

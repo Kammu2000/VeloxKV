@@ -1,4 +1,4 @@
-import { CRLF } from "../common/constants";
+import { CRLF } from "@common/constants";
 import { RespType, RespValue } from "./types";
 
 export class RespSerializer {

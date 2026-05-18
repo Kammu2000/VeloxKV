@@ -3,9 +3,9 @@ import {
   createRespNull,
   createRespBulkString,
   createRespError,
-} from "../protocol/utils";
-import { RespValue } from "../protocol/types";
-import { VeloxDataType } from "../store/types";
+} from "@protocol/utils";
+import { RespValue } from "@protocol/types";
+import { VeloxDataType } from "@store/types";
 
 export class GetCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {

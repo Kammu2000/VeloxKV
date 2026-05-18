@@ -1,11 +1,11 @@
 import { Socket } from "net";
 import Parser from "redis-parser";
 import { RedisError as VeloxError } from "redis-errors";
-import { CommandDispatcher } from "../../commands/runtime/CommandDispatcher";
-import { RespSerializer } from "../../protocol/serializer";
+import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
+import { RespSerializer } from "@protocol/serializer";
+import logger from "@common/utils/logger";
 import { BlockedOperation } from "./utils/BlockedOperation";
-import logger from "../../common/utils/logger";
-import { RespError, RespType, RespValue } from "../../protocol/types";
+import { RespError, RespType, RespValue } from "@protocol/types";
 
 export class ClientConnection {
   private readonly parser: Parser;

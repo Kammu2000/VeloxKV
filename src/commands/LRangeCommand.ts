@@ -2,10 +2,10 @@ import {
   createRespArray,
   createRespBulkString,
   createRespError,
-} from "../protocol/utils";
+} from "@protocol/utils";
 import { Command, CommandContext } from "./runtime/Command";
-import { VeloxDataType } from "../store/types";
-import { RespBulkString, RespValue } from "../protocol/types";
+import { VeloxDataType } from "@store/types";
+import { RespBulkString, RespValue } from "@protocol/types";
 
 export class LRangeCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {

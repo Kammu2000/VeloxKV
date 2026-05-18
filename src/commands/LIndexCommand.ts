@@ -3,9 +3,9 @@ import {
   createRespNull,
   createRespError,
   createRespBulkString,
-} from "../protocol/utils";
-import { VeloxDataType } from "../store/types";
-import { RespValue } from "../protocol/types";
+} from "@protocol/utils";
+import { VeloxDataType } from "@store/types";
+import { RespValue } from "@protocol/types";
 
 export class LIndexCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {

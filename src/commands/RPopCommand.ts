@@ -1,11 +1,11 @@
+import { Command, CommandContext } from "./runtime/Command";
 import {
   createRespError,
   createRespInteger,
   createRespNull,
-} from "../protocol/utils";
-import { Command, CommandContext } from "./runtime/Command";
-import { VeloxDataType } from "../store/types";
-import { RespValue } from "../protocol/types";
+} from "@protocol/utils";
+import { VeloxDataType } from "@store/types";
+import { RespValue } from "@protocol/types";
 
 export class RPopCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {

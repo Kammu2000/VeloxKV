@@ -1,10 +1,10 @@
-import { VeloxServer } from "./server/VeloxServer";
-import { CommandDispatcher } from "./commands/runtime/CommandDispatcher";
-import { registerCommands } from "./commands/runtime/utils";
-import { CommandRegistry } from "./commands/runtime/CommandRegistry";
-import { RespSerializer } from "./protocol/serializer";
-import { VeloxStore } from "./store/VeloxStore";
-import { SERVER_PORT_NUMBER } from "./common/constants";
+import { VeloxServer } from "@server/VeloxServer";
+import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
+import { registerCommands } from "@commands/runtime/utils";
+import { CommandRegistry } from "@commands/runtime/CommandRegistry";
+import { RespSerializer } from "@protocol/serializer";
+import { VeloxStore } from "@store/VeloxStore";
+import { SERVER_PORT_NUMBER } from "@common/constants";
 
 export const main = (): void => {
   const store = new VeloxStore();

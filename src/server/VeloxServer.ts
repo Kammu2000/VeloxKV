@@ -1,7 +1,7 @@
 import net, { Server, Socket } from "net";
-import logger from "../common/utils/logger";
-import { CommandDispatcher } from "../commands/runtime/CommandDispatcher";
-import { RespSerializer } from "../protocol/serializer";
+import logger from "@common/utils/logger";
+import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
+import { RespSerializer } from "@protocol/serializer";
 import { ClientConnection } from "./connections/ClientConnection";
 
 export class VeloxServer {

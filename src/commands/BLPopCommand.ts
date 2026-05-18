@@ -1,10 +1,10 @@
 import { Command, CommandContext } from "./runtime/Command";
-import { createRespError, createRespInteger } from "../protocol/utils";
-import { BlockedOperation } from "../server/connections/utils/BlockedOperation";
-import { WaitToken } from "../server/connections/utils/WaitToken";
-import { VeloxDataType } from "../store/types";
-import { RespValue } from "../protocol/types";
-import { FastQueue } from "../common/utils/FastQueue";
+import { createRespError, createRespInteger } from "@protocol/utils";
+import { BlockedOperation } from "@server/connections/utils/BlockedOperation";
+import { WaitToken } from "@server/connections/utils/WaitToken";
+import { FastQueue } from "@common/utils/FastQueue";
+import { VeloxDataType } from "@store/types";
+import { RespValue } from "@protocol/types";
 
 export class BLPopCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {

@@ -1,13 +1,13 @@
+import { Command, CommandContext } from "./runtime/Command";
 import {
   createRespBulkString,
   createRespError,
   createRespInteger,
-} from "../protocol/utils";
-import { VeloxList } from "../store/values/VeloxList";
-import { Command, CommandContext } from "./runtime/Command";
-import { VeloxStore } from "../store/VeloxStore";
-import { VeloxDataType } from "../store/types";
-import { RespValue } from "../protocol/types";
+} from "@protocol/utils";
+import { VeloxList } from "@store/values/VeloxList";
+import { VeloxStore } from "@store/VeloxStore";
+import { VeloxDataType } from "@store/types";
+import { RespValue } from "@protocol/types";
 
 export class RPushCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {

@@ -1,5 +1,5 @@
 import { BlockedOperation } from "./BlockedOperation";
-import { FastQueue } from "../../../common/utils/FastQueue";
+import { FastQueue } from "@common/utils/FastQueue";
 
 export class WaitToken {
   private disposed: boolean = false;

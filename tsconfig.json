@@ -21,7 +21,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noPropertyAccessFromIndexSignature": true
+    "noPropertyAccessFromIndexSignature": true,
+    "paths": {
+      "@commands/*": ["./src/commands/*"],
+      "@common/*": ["./src/common/*"],
+      "@server/*": ["./src/server/*"],
+      "@store/*": ["./src/store/*"],
+      "@protocol/*": ["./src/protocol/*"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]
