@@ -26,6 +26,14 @@ export class ClientSession {
     this.blockedOperation = operation;
   }
 
+  isInNormalMode(): boolean {
+    return this.mode === CLIENT_CONNECTION_MODE.NORMAL;
+  }
+
+  setClientMode(clientMode: CLIENT_CONNECTION_MODE): void {
+    this.mode = clientMode;
+  }
+
   isInSubscriptionMode(): boolean {
     return this.mode === CLIENT_CONNECTION_MODE.SUBSCRIPTION;
   }

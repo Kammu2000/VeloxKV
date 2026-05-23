@@ -1,10 +1,9 @@
 import { CommandRegistry } from "./CommandRegistry";
-import { CommandType } from "./Command";
+import { CommandContext, CommandType } from "./Command";
 import { createRespError } from "@protocol/utils";
-import { ClientSession } from "@client/ClientSession";
 import { COMMANDS_ALLOWED_IN_SUBSCRIPTION_MODE } from "./constants";
-import { RespType, RespValue } from "@protocol/types";
 import { ServerContext } from "@server/ServerContext";
+import { RespType, RespValue } from "@protocol/types";
 
 export class CommandDispatcher {
   constructor(
@@ -14,16 +13,16 @@ export class CommandDispatcher {
 
   async dispatch(
     rawCommand: string[],
-    session: ClientSession,
-  ): Promise<RespValue> {
-    const commandName = rawCommand[0];
+    client: CommandContext["client"],
+  ): Promise<RespValue | void> {
+    const commandName = rawCommand[0].toUpperCase();
 
     // client connected
     if (commandName === CommandType.COMMAND) {
       return { type: RespType.NULL };
     }
 
-    if (session.isInSubscriptionMode()) {
+    if (client.session.isInSubscriptionMode()) {
       if (!COMMANDS_ALLOWED_IN_SUBSCRIPTION_MODE.has(commandName)) {
         return createRespError(
           `Can't execute ${commandName}: only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING are allowed in this context`,
@@ -40,7 +39,7 @@ export class CommandDispatcher {
     return await command.execute({
       args: rawCommand.slice(1),
       server: this.serverContext,
-      session,
+      client,
     });
   }
 }

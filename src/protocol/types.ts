@@ -43,3 +43,7 @@ export interface RespArray {
   type: RespType.ARRAY;
   value: RespValue[];
 }
+
+export interface RespWriter {
+  write(value: RespValue): void;
+}

@@ -14,6 +14,9 @@ import { LLenCommand } from "../LLenCommand";
 import { LIndexCommand } from "../LIndexCommand";
 import { LRangeCommand } from "../LRangeCommand";
 import { BLPopCommand } from "../BLPopCommand";
+import { SubscribeCommand } from "@commands/SubscribeCommand";
+import { PublishCommand } from "@commands/PublishCommand";
+import { UnSubscribeCommand } from "@commands/UnSubscribeCommand";
 
 export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.PING, new PingCommand());
@@ -30,4 +33,7 @@ export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.LINDEX, new LIndexCommand());
   registry.register(CommandType.LRANGE, new LRangeCommand());
   registry.register(CommandType.BLPOP, new BLPopCommand());
+  registry.register(CommandType.SUBSCRIBE, new SubscribeCommand());
+  registry.register(CommandType.PUBLISH, new PublishCommand());
+  registry.register(CommandType.UNSUBSCRIBE, new UnSubscribeCommand());
 };

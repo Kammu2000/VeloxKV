@@ -7,7 +7,7 @@ import { RespValue } from "@protocol/types";
 
 export class BLPopCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, server, session } = ctx;
+    const { args, server, client } = ctx;
     const keys = args.slice(0, -1);
     const timeoutMs = args[args.length - 1];
 
@@ -49,13 +49,13 @@ export class BLPopCommand implements Command {
       timeoutMs ? Number(timeoutMs) : undefined,
     );
 
-    session.setBlockedOperation(blockingOp);
+    client.session.setBlockedOperation(blockingOp);
 
     for (const key of keys) {
       let waitingQueue = server.blockingManager.getWaitingQueue(key);
 
       if (!waitingQueue) {
-        waitingQueue = server.blockingManager.creatingWaitingQueue(key);
+        waitingQueue = server.blockingManager.createWaitingQueue(key);
       }
 
       const waitToken = new WaitToken(waitingQueue, blockingOp);

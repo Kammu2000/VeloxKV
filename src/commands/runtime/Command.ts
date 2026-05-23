@@ -1,15 +1,19 @@
+import { ClientRespWriter } from "@client/ClientRespWriter";
 import { ClientSession } from "@client/ClientSession";
-import { RespValue } from "@protocol/types";
 import { ServerContext } from "@server/ServerContext";
+import { RespValue } from "@protocol/types";
 
 export interface CommandContext {
   args: string[];
   server: ServerContext;
-  session: ClientSession;
+  client: {
+    session: ClientSession;
+    respWriter: ClientRespWriter;
+  };
 }
 
 export interface Command {
-  execute(ctx: CommandContext): Promise<RespValue>;
+  execute(ctx: CommandContext): Promise<RespValue | void>;
 }
 
 export enum CommandType {

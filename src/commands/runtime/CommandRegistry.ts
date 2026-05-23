@@ -4,10 +4,10 @@ export class CommandRegistry {
   private commands = new Map<string, Command>();
 
   register(name: string, command: Command): void {
-    this.commands.set(name.toUpperCase(), command);
+    this.commands.set(name, command);
   }
 
   get(name: string): Command | undefined {
-    return this.commands.get(name.toUpperCase());
+    return this.commands.get(name);
   }
 }

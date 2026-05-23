@@ -1,19 +1,19 @@
 import { Socket } from "net";
 import logger from "@common/utils/logger";
 import RespParser from "@protocol/parser";
-import { RespSerializer } from "@protocol/serializer";
-import { VeloxError } from "@protocol/parser";
-import { RespError, RespValue, RespType } from "@protocol/types";
 import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
 import { ClientSession } from "./ClientSession";
+import { ClientRespWriter } from "./ClientRespWriter";
+import { createRespError } from "@protocol/utils";
+import { RespValue } from "@protocol/types";
 
-// transport layer: contains protocol serializer, parser and connection start and end responsibilities
+// transport layer
 export class ClientConnection {
   private closed: boolean = false;
   private readonly socket: Socket;
   private readonly respParser: RespParser;
-  private readonly respSerializer: RespSerializer;
   private readonly session: ClientSession;
+  private readonly respWriter: ClientRespWriter;
 
   constructor(
     socket: Socket,
@@ -21,8 +21,11 @@ export class ClientConnection {
     private readonly onClose: (connection: ClientConnection) => void,
   ) {
     this.socket = socket;
-    this.respParser = this.createRespParser();
-    this.respSerializer = new RespSerializer();
+    this.respParser = new RespParser({
+      returnReply: this.handleReply.bind(this),
+      returnError: this.handleError.bind(this),
+    });
+    this.respWriter = new ClientRespWriter(this.socket);
     this.session = new ClientSession();
   }
 
@@ -32,6 +35,7 @@ export class ClientConnection {
     }
 
     this.closed = true;
+    this.session.close();
     this.socket.destroy();
     this.onClose(this);
   }
@@ -54,44 +58,26 @@ export class ClientConnection {
     });
   }
 
-  write(resp: RespValue): void {
-    const serialized = this.respSerializer.serialize(resp);
-    this.socket.write(serialized);
-  }
-
-  private createRespParser(): RespParser {
-    return new RespParser({
-      returnReply: this.handleReply.bind(this),
-      returnError: this.handleRespParserError.bind(this),
-    });
-  }
-
   private handleReply(reply: string[]): void {
+    const client = {
+      session: this.session,
+      respWriter: this.respWriter,
+    };
+
     this.commandDispatcher
-      .dispatch(reply, this.session)
-      .then((result: RespValue): void => {
-        this.write(result);
+      .dispatch(reply, client)
+      .then((result: RespValue | void): void => {
+        if (result) {
+          this.respWriter.write(result);
+        }
       })
       .catch((err: Error): void => {
-        this.handleCommandError(err);
+        this.handleError(err);
       });
   }
 
-  private handleRespParserError(err: VeloxError): void {
-    const respError: RespError = {
-      type: RespType.ERROR,
-      value: err.message,
-    };
-
-    this.write(respError);
-  }
-
-  private handleCommandError(err: Error): void {
-    const respError: RespError = {
-      type: RespType.ERROR,
-      value: err.message,
-    };
-
-    this.write(respError);
+  private handleError(err: Error): void {
+    const respError = createRespError(err.message);
+    this.respWriter.write(respError);
   }
 }

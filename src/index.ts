@@ -4,6 +4,7 @@ import { registerCommands } from "@commands/runtime/utils";
 import { CommandRegistry } from "@commands/runtime/CommandRegistry";
 import { VeloxStore } from "@store/VeloxStore";
 import { BlockingManager } from "@blocking/BlockingManager";
+import { PubSubManager } from "@pubsub/PubSubManager";
 import { ServerContext } from "@server/ServerContext";
 import { SERVER_PORT_NUMBER } from "@common/constants";
 
@@ -14,7 +15,9 @@ export const main = (): void => {
   const serverContext = new ServerContext({
     store: new VeloxStore(),
     blockingManager: new BlockingManager(),
+    pubsubManager: new PubSubManager(),
   });
+
   const commandDispatcher = new CommandDispatcher(
     commandRegistry,
     serverContext,
