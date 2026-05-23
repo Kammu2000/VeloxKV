@@ -1,11 +1,11 @@
-import { VeloxStore } from "@store/VeloxStore";
-import { ClientConnection } from "@server/connections/ClientConnection";
+import { ClientSession } from "@client/ClientSession";
 import { RespValue } from "@protocol/types";
+import { ServerContext } from "@server/ServerContext";
 
 export interface CommandContext {
   args: string[];
-  store: VeloxStore;
-  connection: ClientConnection;
+  server: ServerContext;
+  session: ClientSession;
 }
 
 export interface Command {
@@ -13,6 +13,7 @@ export interface Command {
 }
 
 export enum CommandType {
+  COMMAND = "COMMAND",
   PING = "PING",
   ECHO = "ECHO",
   GET = "GET",
@@ -27,4 +28,7 @@ export enum CommandType {
   LINDEX = "LINDEX",
   LRANGE = "LRANGE",
   BLPOP = "BLPOP",
+  SUBSCRIBE = "SUBSCRIBE",
+  UNSUBSCRIBE = "UNSUBSCRIBE",
+  PUBLISH = "PUBLISH",
 }

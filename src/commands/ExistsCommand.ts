@@ -4,11 +4,11 @@ import { RespValue } from "@protocol/types";
 
 export class ExistsCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     let cnt = 0;
 
     for (const arg of args) {
-      if (store.has(arg)) {
+      if (server.store.has(arg)) {
         cnt++;
       }
     }

@@ -1,17 +1,13 @@
 import net, { Server, Socket } from "net";
 import logger from "@common/utils/logger";
 import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
-import { RespSerializer } from "@protocol/serializer";
-import { ClientConnection } from "./connections/ClientConnection";
+import { ClientConnection } from "@client/ClientConnection";
 
 export class VeloxServer {
   private readonly server: Server;
   private readonly connections = new Set<ClientConnection>();
 
-  constructor(
-    private readonly commandDispatcher: CommandDispatcher,
-    private readonly respSerializer: RespSerializer,
-  ) {
+  constructor(private readonly commandDispatcher: CommandDispatcher) {
     this.server = net.createServer(this.handleConnection.bind(this));
   }
 
@@ -19,7 +15,6 @@ export class VeloxServer {
     const connection = new ClientConnection(
       socket,
       this.commandDispatcher,
-      this.respSerializer,
       this.handleDisconnect.bind(this),
     );
 

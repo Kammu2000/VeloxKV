@@ -5,23 +5,23 @@ import {
   createRespInteger,
 } from "@protocol/utils";
 import { VeloxList } from "@store/values/VeloxList";
-import { VeloxStore } from "@store/VeloxStore";
+import { ServerContext } from "@server/ServerContext";
 import { VeloxDataType } from "@store/types";
 import { RespValue } from "@protocol/types";
 
 export class LPushCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     const [listKey, ...elements] = args;
 
-    let listObj = store.get(listKey);
+    let listObj = server.store.get(listKey);
 
     if (!listObj) {
       listObj = {
         type: VeloxDataType.LIST,
         value: new VeloxList<string>(),
       };
-      store.set(listKey, listObj);
+      server.store.set(listKey, listObj);
     }
 
     if (listObj.type !== VeloxDataType.LIST) {
@@ -36,23 +36,23 @@ export class LPushCommand implements Command {
       list.lpush(element);
     }
 
-    this.notifyWaiter(list, listKey, store);
+    this.notifyWaiter(list, listKey, server);
     return createRespInteger(String(list.size()));
   }
 
   private notifyWaiter(
     list: VeloxList<string>,
     listKey: string,
-    store: VeloxStore,
+    server: ServerContext,
   ): void {
-    const waitingList = store.listWaitingMap.get(listKey);
-    const waiter = waitingList?.pop();
+    const waitingQueue = server.blockingManager.getWaitingQueue(listKey);
+    const waiter = waitingQueue?.pop();
 
     if (waiter) {
       const value = list.lpop();
 
       if (list.isEmpty()) {
-        store.del(listKey);
+        server.store.del(listKey);
       }
 
       waiter.operation.complete(createRespBulkString(value));

@@ -4,12 +4,12 @@ import { RespValue } from "@protocol/types";
 
 export class DelCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     let cnt = 0;
 
     for (const arg of args) {
-      if (store.has(arg)) {
-        store.del(arg);
+      if (server.store.has(arg)) {
+        server.store.del(arg);
         cnt++;
       }
     }

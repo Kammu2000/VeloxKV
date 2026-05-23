@@ -9,14 +9,14 @@ import { VeloxDataType } from "@store/types";
 
 export class SetCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     const [key, value] = args;
 
     if (!isString(key) || !isString(value)) {
       return createRespError("please provide a valid key and value");
     }
 
-    store.set(key, { type: VeloxDataType.STRING, value });
+    server.store.set(key, { type: VeloxDataType.STRING, value });
     return createRespSimpleString("OK");
   }
 }

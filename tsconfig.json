@@ -25,9 +25,12 @@
     "paths": {
       "@commands/*": ["./src/commands/*"],
       "@common/*": ["./src/common/*"],
+      "@client/*": ["./src/client/*"],
       "@server/*": ["./src/server/*"],
       "@store/*": ["./src/store/*"],
-      "@protocol/*": ["./src/protocol/*"]
+      "@protocol/*": ["./src/protocol/*"],
+      "@pubsub/*": ["./src/pubsub/*"],
+      "@blocking/*": ["./src/blocking/*"]
     }
   },
   "include": ["src/**/*.ts"],

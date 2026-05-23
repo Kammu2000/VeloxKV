@@ -2,18 +2,25 @@ import { VeloxServer } from "@server/VeloxServer";
 import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
 import { registerCommands } from "@commands/runtime/utils";
 import { CommandRegistry } from "@commands/runtime/CommandRegistry";
-import { RespSerializer } from "@protocol/serializer";
 import { VeloxStore } from "@store/VeloxStore";
+import { BlockingManager } from "@blocking/BlockingManager";
+import { ServerContext } from "@server/ServerContext";
 import { SERVER_PORT_NUMBER } from "@common/constants";
 
 export const main = (): void => {
-  const store = new VeloxStore();
   const commandRegistry = new CommandRegistry();
   registerCommands(commandRegistry);
-  const commandDispatcher = new CommandDispatcher(commandRegistry, store);
-  const respSerializer = new RespSerializer();
 
-  const server = new VeloxServer(commandDispatcher, respSerializer);
+  const serverContext = new ServerContext({
+    store: new VeloxStore(),
+    blockingManager: new BlockingManager(),
+  });
+  const commandDispatcher = new CommandDispatcher(
+    commandRegistry,
+    serverContext,
+  );
+
+  const server = new VeloxServer(commandDispatcher);
   server.start(SERVER_PORT_NUMBER);
   process.on("SIGINT", (): void => {
     server.stop();

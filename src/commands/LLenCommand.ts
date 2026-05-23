@@ -9,10 +9,10 @@ import { RespValue } from "@protocol/types";
 
 export class LLenCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     const [listKey] = args;
 
-    const listObj = store.get(listKey);
+    const listObj = server.store.get(listKey);
 
     if (!listObj) {
       return createRespNull();

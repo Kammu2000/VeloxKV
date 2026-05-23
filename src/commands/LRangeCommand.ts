@@ -9,10 +9,10 @@ import { RespBulkString, RespValue } from "@protocol/types";
 
 export class LRangeCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     const [listKey, startIdx, lastIdx] = args;
 
-    const listObj = store.get(listKey);
+    const listObj = server.store.get(listKey);
 
     if (!listObj || !startIdx || !lastIdx) {
       return createRespArray([]);

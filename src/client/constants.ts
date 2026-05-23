@@ -1,0 +1,4 @@
+export enum CLIENT_CONNECTION_MODE {
+  SUBSCRIPTION,
+  NORMAL,
+}

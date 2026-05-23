@@ -9,10 +9,10 @@ import { VeloxDataType } from "@store/types";
 
 export class GetCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     const key = args[0];
 
-    const storedValue = store.get(key);
+    const storedValue = server.store.get(key);
 
     if (!storedValue) {
       return createRespNull();

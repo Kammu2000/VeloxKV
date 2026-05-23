@@ -9,10 +9,10 @@ import { RespValue } from "@protocol/types";
 
 export class RPopCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store } = ctx;
+    const { args, server } = ctx;
     const [listKey] = args;
 
-    const listObj = store.get(listKey);
+    const listObj = server.store.get(listKey);
 
     if (!listObj) {
       return createRespNull();
@@ -28,7 +28,7 @@ export class RPopCommand implements Command {
     const value = list.rpop();
 
     if (list.isEmpty()) {
-      store.del(listKey);
+      server.store.del(listKey);
     }
 
     return createRespInteger(String(value));

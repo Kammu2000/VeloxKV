@@ -1,24 +1,39 @@
 import { Socket } from "net";
-import Parser from "redis-parser";
-import { RedisError as VeloxError } from "redis-errors";
-import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
-import { RespSerializer } from "@protocol/serializer";
 import logger from "@common/utils/logger";
-import { BlockedOperation } from "./utils/BlockedOperation";
-import { RespError, RespType, RespValue } from "@protocol/types";
+import RespParser from "@protocol/parser";
+import { RespSerializer } from "@protocol/serializer";
+import { VeloxError } from "@protocol/parser";
+import { RespError, RespValue, RespType } from "@protocol/types";
+import { CommandDispatcher } from "@commands/runtime/CommandDispatcher";
+import { ClientSession } from "./ClientSession";
 
+// transport layer: contains protocol serializer, parser and connection start and end responsibilities
 export class ClientConnection {
-  private readonly parser: Parser;
   private closed: boolean = false;
-  private blockedOperation?: BlockedOperation;
+  private readonly socket: Socket;
+  private readonly respParser: RespParser;
+  private readonly respSerializer: RespSerializer;
+  private readonly session: ClientSession;
 
   constructor(
-    private readonly socket: Socket,
+    socket: Socket,
     private readonly commandDispatcher: CommandDispatcher,
-    private readonly respSerializer: RespSerializer,
     private readonly onClose: (connection: ClientConnection) => void,
   ) {
-    this.parser = this.createParser();
+    this.socket = socket;
+    this.respParser = this.createRespParser();
+    this.respSerializer = new RespSerializer();
+    this.session = new ClientSession();
+  }
+
+  close(): void {
+    if (this.closed) {
+      return;
+    }
+
+    this.closed = true;
+    this.socket.destroy();
+    this.onClose(this);
   }
 
   start(): void {
@@ -26,7 +41,7 @@ export class ClientConnection {
     this.socket.setNoDelay(true);
 
     this.socket.on("data", (chunk: Buffer): void => {
-      this.parser.execute(chunk);
+      this.respParser.execute(chunk);
     });
 
     this.socket.on("close", (): void => {
@@ -39,36 +54,21 @@ export class ClientConnection {
     });
   }
 
-  close(): void {
-    if (this.closed) {
-      return;
-    }
-
-    this.closed = true;
-    this.blockedOperation?.cancel();
-    this.socket.destroy();
-    this.onClose(this);
-  }
-
   write(resp: RespValue): void {
     const serialized = this.respSerializer.serialize(resp);
     this.socket.write(serialized);
   }
 
-  setBlockedOperation(operation: BlockedOperation): void {
-    this.blockedOperation = operation;
-  }
-
-  private createParser(): Parser {
-    return new Parser({
+  private createRespParser(): RespParser {
+    return new RespParser({
       returnReply: this.handleReply.bind(this),
-      returnError: this.handleParserError.bind(this),
+      returnError: this.handleRespParserError.bind(this),
     });
   }
 
   private handleReply(reply: string[]): void {
     this.commandDispatcher
-      .dispatch(reply, this)
+      .dispatch(reply, this.session)
       .then((result: RespValue): void => {
         this.write(result);
       })
@@ -77,7 +77,7 @@ export class ClientConnection {
       });
   }
 
-  private handleParserError(err: VeloxError): void {
+  private handleRespParserError(err: VeloxError): void {
     const respError: RespError = {
       type: RespType.ERROR,
       value: err.message,

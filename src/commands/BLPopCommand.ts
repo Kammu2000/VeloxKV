@@ -1,20 +1,19 @@
 import { Command, CommandContext } from "./runtime/Command";
 import { createRespError, createRespInteger } from "@protocol/utils";
-import { BlockedOperation } from "@server/connections/utils/BlockedOperation";
-import { WaitToken } from "@server/connections/utils/WaitToken";
-import { FastQueue } from "@common/utils/FastQueue";
+import { BlockedOperation } from "@blocking/BlockedOperation";
+import { WaitToken } from "@blocking/WaitToken";
 import { VeloxDataType } from "@store/types";
 import { RespValue } from "@protocol/types";
 
 export class BLPopCommand implements Command {
   async execute(ctx: CommandContext): Promise<RespValue> {
-    const { args, store, connection } = ctx;
+    const { args, server, session } = ctx;
     const keys = args.slice(0, -1);
     const timeoutMs = args[args.length - 1];
 
     // case-1: if any of the list is non-empty then return the value by popping first element
     for (const key of keys) {
-      const listObj = store.get(key);
+      const listObj = server.store.get(key);
 
       if (!listObj) {
         continue;
@@ -32,7 +31,7 @@ export class BLPopCommand implements Command {
         const value = list.lpop();
 
         if (list.isEmpty()) {
-          store.del(key);
+          server.store.del(key);
         }
 
         return createRespInteger(value);
@@ -50,19 +49,18 @@ export class BLPopCommand implements Command {
       timeoutMs ? Number(timeoutMs) : undefined,
     );
 
-    connection.setBlockedOperation(blockingOp);
+    session.setBlockedOperation(blockingOp);
 
     for (const key of keys) {
-      let waitingList = store.listWaitingMap.get(key);
+      let waitingQueue = server.blockingManager.getWaitingQueue(key);
 
-      if (!waitingList) {
-        waitingList = new FastQueue<WaitToken>();
-        store.listWaitingMap.set(key, waitingList);
+      if (!waitingQueue) {
+        waitingQueue = server.blockingManager.creatingWaitingQueue(key);
       }
 
-      const waitToken = new WaitToken(waitingList, blockingOp);
+      const waitToken = new WaitToken(waitingQueue, blockingOp);
 
-      waitingList.push(waitToken);
+      waitingQueue.push(waitToken);
       blockingOp.addToken(waitToken);
     }
 
