@@ -1,8 +1,10 @@
 import { VeloxList } from "./values/VeloxList";
+import { VeloxStream } from "./values/VeloxStream";
 
 export enum VeloxDataType {
   STRING = "string",
   LIST = "list",
+  STREAM = "stream",
 }
 
 export interface VeloxStringValue {
@@ -15,4 +17,9 @@ export interface VeloxListValue {
   value: VeloxList<string>;
 }
 
-export type VeloxValue = VeloxStringValue | VeloxListValue;
+export interface VeloxStreamValue {
+  type: VeloxDataType.STREAM;
+  value: VeloxStream;
+}
+
+export type VeloxValue = VeloxStringValue | VeloxListValue | VeloxStreamValue;

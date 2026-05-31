@@ -35,4 +35,5 @@ export enum CommandType {
   SUBSCRIBE = "SUBSCRIBE",
   UNSUBSCRIBE = "UNSUBSCRIBE",
   PUBLISH = "PUBLISH",
+  XADD = "XADD",
 }

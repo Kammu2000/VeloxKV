@@ -1,22 +1,23 @@
 import { CommandRegistry } from "./CommandRegistry";
 import { CommandType } from "./Command";
-import { PingCommand } from "../PingCommand";
-import { EchoCommand } from "../EchoCommand";
-import { GetCommand } from "../GetCommand";
-import { SetCommand } from "../SetCommand";
-import { DelCommand } from "../DelCommand";
-import { ExistsCommand } from "../ExistsCommand";
-import { LPushCommand } from "../LPushCommand";
-import { RPushCommand } from "../RPushCommand";
-import { LPopCommand } from "../LPopCommand";
-import { RPopCommand } from "../RPopCommand";
-import { LLenCommand } from "../LLenCommand";
-import { LIndexCommand } from "../LIndexCommand";
-import { LRangeCommand } from "../LRangeCommand";
-import { BLPopCommand } from "../BLPopCommand";
+import { PingCommand } from "@commands/PingCommand";
+import { EchoCommand } from "@commands/EchoCommand";
+import { GetCommand } from "@commands/GetCommand";
+import { SetCommand } from "@commands/SetCommand";
+import { DelCommand } from "@commands/DelCommand";
+import { ExistsCommand } from "@commands/ExistsCommand";
+import { LPushCommand } from "@commands/LPushCommand";
+import { RPushCommand } from "@commands/RPushCommand";
+import { LPopCommand } from "@commands/LPopCommand";
+import { RPopCommand } from "@commands/RPopCommand";
+import { LLenCommand } from "@commands/LLenCommand";
+import { LIndexCommand } from "@commands/LIndexCommand";
+import { LRangeCommand } from "@commands/LRangeCommand";
+import { BLPopCommand } from "@commands/BLPopCommand";
 import { SubscribeCommand } from "@commands/SubscribeCommand";
 import { PublishCommand } from "@commands/PublishCommand";
 import { UnSubscribeCommand } from "@commands/UnSubscribeCommand";
+import { XAddCommand } from "@commands/XaddCommand";
 
 export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.PING, new PingCommand());
@@ -36,4 +37,5 @@ export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.SUBSCRIBE, new SubscribeCommand());
   registry.register(CommandType.PUBLISH, new PublishCommand());
   registry.register(CommandType.UNSUBSCRIBE, new UnSubscribeCommand());
+  registry.register(CommandType.XADD, new XAddCommand());
 };
