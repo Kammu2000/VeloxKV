@@ -1,4 +1,6 @@
-import { StreamEntryId } from "../VeloxStream";
+import { RespArray } from "@protocol/types";
+import { StreamEntryId, StreamRecord } from "../VeloxStream";
+import { createRespArray, createRespBulkString } from "@protocol/utils";
 
 export const serializeStreamEntryId = (id: StreamEntryId): string => {
   return `${id.timeStamp}-${id.sequence}`;
@@ -65,4 +67,23 @@ export const generateStreamEntryId = (
   }
 
   return { timeStamp: ts, sequence: seq };
+};
+
+export const serializeStreamEntries = (entries: StreamRecord[]): RespArray => {
+  return createRespArray(
+    entries.map((entry: StreamRecord) => {
+      const serializedId = serializeStreamEntryId(entry.id);
+      const serializedFields = Object.entries(entry.fields).flatMap(
+        ([k, v]: [string, string]) => [
+          createRespBulkString(k),
+          createRespBulkString(v),
+        ],
+      );
+
+      return createRespArray([
+        createRespBulkString(serializedId),
+        createRespArray(serializedFields),
+      ]);
+    }),
+  );
 };
