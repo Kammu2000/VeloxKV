@@ -4,7 +4,7 @@ import { CLIENT_CONNECTION_MODE } from "@client/constants";
 
 export class ClientSession {
   private closed: boolean = false;
-  private blockedOperation?: BlockedOperation;
+  private blockedOperation: BlockedOperation | undefined;
   public readonly subscriptions: ClientSubscriptions;
   private mode: CLIENT_CONNECTION_MODE = CLIENT_CONNECTION_MODE.NORMAL;
 
@@ -22,7 +22,7 @@ export class ClientSession {
     this.subscriptions.dispose();
   }
 
-  setBlockedOperation(operation: BlockedOperation): void {
+  setBlockedOperation(operation: BlockedOperation | undefined): void {
     this.blockedOperation = operation;
   }
 

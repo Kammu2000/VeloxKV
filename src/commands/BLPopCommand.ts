@@ -1,7 +1,10 @@
 import { Command, CommandContext } from "./runtime/Command";
-import { createRespError, createRespInteger } from "@protocol/utils";
+import {
+  createRespError,
+  createRespInteger,
+  createRespNull,
+} from "@protocol/utils";
 import { BlockedOperation } from "@blocking/BlockedOperation";
-import { WaitToken } from "@blocking/WaitToken";
 import { VeloxDataType } from "@store/types";
 import { RespValue } from "@protocol/types";
 
@@ -46,24 +49,19 @@ export class BLPopCommand implements Command {
     // grows to very high number because each thread occupies certain amount of memory so memory explodes with the number of threads.
     // Redis is also single threaded and it has implemented async runtime in C++ by keeping single thread similar to nodejs using event loop
     const blockingOp = new BlockedOperation(
+      { type: VeloxDataType.LIST, keys },
       timeoutMs ? Number(timeoutMs) : undefined,
+      createRespNull(),
     );
+
+    for (const key of keys) {
+      server.blockingManager.addOperation(blockingOp, key, VeloxDataType.LIST);
+    }
 
     client.session.setBlockedOperation(blockingOp);
 
-    for (const key of keys) {
-      let waitingQueue = server.blockingManager.getWaitingQueue(key);
-
-      if (!waitingQueue) {
-        waitingQueue = server.blockingManager.createWaitingQueue(key);
-      }
-
-      const waitToken = new WaitToken(waitingQueue, blockingOp);
-
-      waitingQueue.push(waitToken);
-      blockingOp.addToken(waitToken);
-    }
-
-    return await blockingOp.promise;
+    const result = await blockingOp.promise;
+    client.session.setBlockedOperation(undefined);
+    return result;
   }
 }

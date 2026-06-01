@@ -54,6 +54,10 @@ export class FastQueue<T> {
     } else this.tail = prevNode; // removing tail
   }
 
+  isEmpty(): boolean {
+    return this.head === null;
+  }
+
   clear(): void {
     this.head = null;
     this.tail = null;

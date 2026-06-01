@@ -1,11 +1,6 @@
 import { Command, CommandContext } from "./runtime/Command";
-import {
-  createRespBulkString,
-  createRespError,
-  createRespInteger,
-} from "@protocol/utils";
+import { createRespError, createRespInteger } from "@protocol/utils";
 import { VeloxList } from "@store/values/VeloxList";
-import { ServerContext } from "@server/ServerContext";
 import { VeloxDataType } from "@store/types";
 import { RespValue } from "@protocol/types";
 
@@ -36,26 +31,7 @@ export class RPushCommand implements Command {
       list.rpush(element);
     }
 
-    this.notifyWaiter(list, listKey, server);
+    server.blockingManager.onListAppend(listKey, list);
     return createRespInteger(String(list.size()));
-  }
-
-  private notifyWaiter(
-    list: VeloxList<string>,
-    listKey: string,
-    server: ServerContext,
-  ): void {
-    const waitingList = server.blockingManager.getWaitingQueue(listKey);
-    const waiter = waitingList?.pop();
-
-    if (waiter) {
-      const value = list.lpop();
-
-      if (list.isEmpty()) {
-        server.store.del(listKey);
-      }
-
-      waiter.operation.complete(createRespBulkString(value));
-    }
   }
 }
