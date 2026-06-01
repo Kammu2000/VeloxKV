@@ -19,6 +19,7 @@ import { PublishCommand } from "@commands/PublishCommand";
 import { UnSubscribeCommand } from "@commands/UnSubscribeCommand";
 import { XAddCommand } from "@commands/XaddCommand";
 import { XRangeCommand } from "@commands/XRangeCommand";
+import { XReadCommand } from "@commands/XReadCommand";
 
 export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.PING, new PingCommand());
@@ -40,4 +41,5 @@ export const registerCommands = (registry: CommandRegistry): void => {
   registry.register(CommandType.UNSUBSCRIBE, new UnSubscribeCommand());
   registry.register(CommandType.XADD, new XAddCommand());
   registry.register(CommandType.XRANGE, new XRangeCommand());
+  registry.register(CommandType.XREAD, new XReadCommand());
 };

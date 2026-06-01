@@ -37,4 +37,5 @@ export enum CommandType {
   PUBLISH = "PUBLISH",
   XADD = "XADD",
   XRANGE = "XRANGE",
+  XREAD = "XREAD",
 }

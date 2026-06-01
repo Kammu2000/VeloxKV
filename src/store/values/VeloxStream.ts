@@ -77,4 +77,9 @@ export class VeloxStream {
 
     return this.entries.slice(left, right);
   }
+
+  after(a: StreamEntryId): StreamRecord[] {
+    const idx = upperBound(this.entries, a);
+    return this.entries.slice(idx);
+  }
 }

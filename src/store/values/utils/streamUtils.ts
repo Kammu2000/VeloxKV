@@ -87,3 +87,16 @@ export const serializeStreamEntries = (entries: StreamRecord[]): RespArray => {
     }),
   );
 };
+
+export const createXReadRespResponse = (
+  streamVsEntries: Record<string, StreamRecord[]>,
+): RespArray =>
+  createRespArray(
+    Object.entries(streamVsEntries).map(
+      ([key, value]: [string, StreamRecord[]]) =>
+        createRespArray([
+          createRespBulkString(key),
+          serializeStreamEntries(value),
+        ]),
+    ),
+  );

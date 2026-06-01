@@ -24,7 +24,7 @@ export class XAddCommand implements Command {
       server.store.set(key, streamObj);
     }
 
-    const stream = streamObj.value;
+    const stream = streamObj.value as VeloxStream;
 
     const fields: StreamEntry = {};
 
@@ -32,10 +32,11 @@ export class XAddCommand implements Command {
       fields[fieldValuePairs[i]] = fieldValuePairs[i + 1];
     }
 
-    const topId = (stream as VeloxStream).getTopId();
+    const topId = stream.getTopId();
     const entryId = generateStreamEntryId(id, topId);
-    (stream as VeloxStream).addEntry(entryId, fields);
+    stream.addEntry(entryId, fields);
 
+    server.blockingManager.onStreamAppend(key, stream);
     return createRespBulkString(serializeStreamEntryId(entryId));
   }
 }
